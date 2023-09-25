@@ -42,6 +42,8 @@ liivaHagudi.addEventListener(('click'), () => {
     getTimesForJourney(stops.Liiva, stops.Hagudi, liivaHagudi);
 });
 
+const options = { hour: 'numeric', minute: 'numeric' };
+
 function getTimesForJourney(start, end, journeyNode) {
     let journeyTitle = journeyNode.textContent;
     clearPreviousSearch()
@@ -53,10 +55,10 @@ function getTimesForJourney(start, end, journeyNode) {
         res.forEach(trip => {
             let tripData = trip.trips[0]
             if (tripData.departure_time_min > getMinutesFromMidnight()) {
-                let departure = new Date(tripData.departure_time);
-                let arrival = new Date(tripData.arrival_time);
+                let departure = new Date(tripData.departure_time).toLocaleTimeString(undefined, options);
+                let arrival = new Date(tripData.arrival_time).toLocaleTimeString(undefined, options);
                 const listItem = document.createElement('p')
-                listItem.innerText = departure.toLocaleTimeString() + ' - ' + arrival.toLocaleTimeString();
+                listItem.innerText = departure + ' - ' + arrival;
                 journeyNode.appendChild(listItem)
             }
         });
@@ -87,11 +89,11 @@ function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
                     });
 
                     if (!!tripData2) {
-                        let departure = new Date(tripData.departure_time).toLocaleTimeString();
-                        let arrival = new Date(tripData.arrival_time).toLocaleTimeString();
+                        let departure = new Date(tripData.departure_time).toLocaleTimeString(undefined, options);
+                        let arrival = new Date(tripData.arrival_time).toLocaleTimeString(undefined, options);
                         const listItem = document.createElement('p');
-                        let departure2 = new Date(tripData2.departure_time).toLocaleTimeString();
-                        let arrival2 = new Date(tripData2.arrival_time).toLocaleTimeString();
+                        let departure2 = new Date(tripData2.departure_time).toLocaleTimeString(undefined, options);
+                        let arrival2 = new Date(tripData2.arrival_time).toLocaleTimeString(undefined, options);
                         listItem.innerText = departure + ' - ' + arrival + ' (' + gapBetween + 'min) ' + departure2 + ' - ' + arrival2;
                         journeyNode.appendChild(listItem);
                     }
