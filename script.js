@@ -9,6 +9,7 @@ let stops = {
 const hagudiTallinn = document.getElementById('hagTal');
 const tallinnUlemiste = document.getElementById('talUle');
 const hagudiUlemiste = document.getElementById('hagUle');
+const hagudiLiiva = document.getElementById('hagLiiva');
 const ulemisteTallinn = document.getElementById('uleTal');
 const tallinnHagudi = document.getElementById('talHag');
 const ulemisteHagudi = document.getElementById('uleHag');
@@ -19,11 +20,15 @@ hagudiTallinn.addEventListener(('click'), () => {
 });
 
 tallinnUlemiste.addEventListener(('click'), () => {
-    getTimesForJourney(stops.TallinnS, stops.Ulemiste, ulemisteTallinn);
+    getTimesForJourney(stops.TallinnS, stops.Ulemiste, tallinnUlemiste);
 });
 
 hagudiUlemiste.addEventListener(('click'), () => {
     getTimesForCombinedJourney(stops.Hagudi, stops.TallinnW, stops.TallinnS, stops.Ulemiste, hagudiUlemiste);
+});
+
+hagudiLiiva.addEventListener(('click'), () => {
+    getTimesForJourney(stops.Hagudi, stops.Liiva, hagudiLiiva);
 });
 
 ulemisteTallinn.addEventListener(('click'), () => {
