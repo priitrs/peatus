@@ -1,8 +1,8 @@
 let stops = {
-    "Hagudi" : "64-6298-5",
+    "Hagudi": "64-6298-5",
     "Liiva": "64-6298-48",
-    "TallinnW" : "64-6298-93",
-    "TallinnS" : "64-6320-93",
+    "TallinnW": "64-6298-93",
+    "TallinnS": "64-6320-93",
     "Ulemiste": "64-6320-117"
 }
 
@@ -43,11 +43,13 @@ liivaHagudi.addEventListener(('click'), () => {
 });
 
 function getTimesForJourney(start, end, journeyNode) {
-    fetchData(start, end).then(res => {
-        let journeyTitle = journeyNode.textContent;
-        clearPreviousSearch();
-        journeyNode.innerText = journeyTitle;
+    let journeyTitle = journeyNode.textContent;
+    clearPreviousSearch()
+    journeyNode.innerText = journeyTitle + '  loading...';
+    
 
+    fetchData(start, end).then(res => {
+        journeyNode.innerText = journeyTitle;
         res.forEach(trip => {
             let tripData = trip.trips[0]
             if (tripData.departure_time_min > getMinutesFromMidnight()) {
@@ -63,38 +65,36 @@ function getTimesForJourney(start, end, journeyNode) {
     });
 }
 
-
 function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
+    let journeyTitle = journeyNode.textContent;
+    clearPreviousSearch()
+    journeyNode.innerText = journeyTitle + '  loading...';
+    
     fetchData(start, end).then(res => {
-        let journeyTitle = journeyNode.textContent;
-        clearPreviousSearch();
-        journeyNode.innerText = journeyTitle;
-
         fetchData(start2, end2).then(res2 => {
+            journeyNode.innerText = journeyTitle;
             res.forEach(trip => {
                 let tripData = trip.trips[0]
-                
-                if (tripData.departure_time_min > getMinutesFromMidnight()) {
-                    let noTrip2Found = true;
+                let departureIsInFuture = tripData.departure_time_min > getMinutesFromMidnight();
+                if (departureIsInFuture) {
                     let tripData2 = null;
+                    let gapBetween = null;
                     res2.forEach(trip2 => {
-                        if (noTrip2Found && trip2.trips[0].departure_time_min > tripData.arrival_time_min) {
-                            noTrip2Found = false;
+                        gapBetween = trip2.trips[0].departure_time_min - tripData.arrival_time_min
+                        if (!tripData2 && gapBetween > 0) {
                             tripData2 = trip2.trips[0];
                         }
                     });
-                
-                    let departure = new Date(tripData.departure_time).toLocaleTimeString();
-                    let arrival = new Date(tripData.arrival_time).toLocaleTimeString();
-                    const listItem = document.createElement('p');
+
                     if (!!tripData2) {
+                        let departure = new Date(tripData.departure_time).toLocaleTimeString();
+                        let arrival = new Date(tripData.arrival_time).toLocaleTimeString();
+                        const listItem = document.createElement('p');
                         let departure2 = new Date(tripData2.departure_time).toLocaleTimeString();
                         let arrival2 = new Date(tripData2.arrival_time).toLocaleTimeString();
-                        listItem.innerText = departure + ' - ' + arrival + ' + ' + departure2 + ' - ' + arrival2;
-                    } else {
-                        listItem.innerText = departure + ' - ' + arrival;
+                        listItem.innerText = departure + ' - ' + arrival + ' / ' + gapBetween + 'min / ' + departure2 + ' - ' + arrival2;
+                        journeyNode.appendChild(listItem);
                     }
-                    journeyNode.appendChild(listItem);
                 }
             })
         });
