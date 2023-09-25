@@ -92,7 +92,7 @@ function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
                         const listItem = document.createElement('p');
                         let departure2 = new Date(tripData2.departure_time).toLocaleTimeString();
                         let arrival2 = new Date(tripData2.arrival_time).toLocaleTimeString();
-                        listItem.innerText = departure + ' - ' + arrival + ' / ' + gapBetween + 'min / ' + departure2 + ' - ' + arrival2;
+                        listItem.innerText = departure + ' - ' + arrival + ' (' + gapBetween + 'min) ' + departure2 + ' - ' + arrival2;
                         journeyNode.appendChild(listItem);
                     }
                 }
