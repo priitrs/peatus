@@ -8,55 +8,107 @@ let stops = {
 
 const hagudiTallinn = document.getElementById('hagTal');
 const tallinnUlemiste = document.getElementById('talUle');
+const hagudiUlemiste = document.getElementById('hagUle');
 const ulemisteTallinn = document.getElementById('uleTal');
 const tallinnHagudi = document.getElementById('talHag');
+const ulemisteHagudi = document.getElementById('uleHag');
 const liivaHagudi = document.getElementById('liivaHag');
 
 hagudiTallinn.addEventListener(('click'), () => {
     getTimesForJourney(stops.Hagudi, stops.TallinnW, hagudiTallinn);
 });
 
-tallinnHagudi.addEventListener(('click'), () => {
-    getTimesForJourney(stops.TallinnW, stops.Hagudi, tallinnHagudi);
+tallinnUlemiste.addEventListener(('click'), () => {
+    getTimesForJourney(stops.TallinnS, stops.Ulemiste, ulemisteTallinn);
+});
+
+hagudiUlemiste.addEventListener(('click'), () => {
+    getTimesForCombinedJourney(stops.Hagudi, stops.TallinnW, stops.TallinnS, stops.Ulemiste, hagudiUlemiste);
 });
 
 ulemisteTallinn.addEventListener(('click'), () => {
     getTimesForJourney(stops.Ulemiste, stops.TallinnS, ulemisteTallinn);
 });
 
+tallinnHagudi.addEventListener(('click'), () => {
+    getTimesForJourney(stops.TallinnW, stops.Hagudi, tallinnHagudi);
+});
+
+ulemisteHagudi.addEventListener(('click'), () => {
+    getTimesForCombinedJourney(stops.Ulemiste, stops.TallinnS, stops.TallinnW, stops.Hagudi, ulemisteHagudi);
+});
+
 liivaHagudi.addEventListener(('click'), () => {
     getTimesForJourney(stops.Liiva, stops.Hagudi, liivaHagudi);
 });
 
-tallinnUlemiste.addEventListener(('click'), () => {
-    getTimesForJourney(stops.TallinnS, stops.Ulemiste, ulemisteTallinn);
-});
-
 function getTimesForJourney(start, end, journeyNode) {
     fetchData(start, end).then(res => {
-        console.log(res);
-        const currentMinutesFromMidnight = getMinutesFromMidnight();
+        let journeyTitle = journeyNode.textContent;
+        clearPreviousSearch();
+        journeyNode.innerText = journeyTitle;
 
-        const allTrips = document.querySelectorAll('.trip');
-        allTrips.forEach(trip => {
-            while (trip.firstChild) {
-                trip.removeChild(trip.firstChild);
-            }
-        });
-        
         res.forEach(trip => {
             let tripData = trip.trips[0]
-            if (tripData.departure_time_min > currentMinutesFromMidnight) {
+            if (tripData.departure_time_min > getMinutesFromMidnight()) {
                 let departure = new Date(tripData.departure_time);
                 let arrival = new Date(tripData.arrival_time);
                 const listItem = document.createElement('p')
                 listItem.innerText = departure.toLocaleTimeString() + ' - ' + arrival.toLocaleTimeString();
                 journeyNode.appendChild(listItem)
-                // console.log(departure.toLocaleTimeString() + ' - ' + arrival.toLocaleTimeString())
             }
         });
     }).catch(e => {
         console.log(e)
+    });
+}
+
+
+function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
+    fetchData(start, end).then(res => {
+        let journeyTitle = journeyNode.textContent;
+        clearPreviousSearch();
+        journeyNode.innerText = journeyTitle;
+
+        fetchData(start2, end2).then(res2 => {
+            res.forEach(trip => {
+                let tripData = trip.trips[0]
+                
+                if (tripData.departure_time_min > getMinutesFromMidnight()) {
+                    let noTrip2Found = true;
+                    let tripData2 = null;
+                    res2.forEach(trip2 => {
+                        if (noTrip2Found && trip2.trips[0].departure_time_min > tripData.arrival_time_min) {
+                            noTrip2Found = false;
+                            tripData2 = trip2.trips[0];
+                        }
+                    });
+                
+                    let departure = new Date(tripData.departure_time).toLocaleTimeString();
+                    let arrival = new Date(tripData.arrival_time).toLocaleTimeString();
+                    const listItem = document.createElement('p');
+                    if (!!tripData2) {
+                        let departure2 = new Date(tripData2.departure_time).toLocaleTimeString();
+                        let arrival2 = new Date(tripData2.arrival_time).toLocaleTimeString();
+                        listItem.innerText = departure + ' - ' + arrival + ' + ' + departure2 + ' - ' + arrival2;
+                    } else {
+                        listItem.innerText = departure + ' - ' + arrival;
+                    }
+                    journeyNode.appendChild(listItem);
+                }
+            })
+        });
+    }).catch(e => {
+        console.log(e)
+    });
+}
+
+function clearPreviousSearch() {
+    const allTrips = document.querySelectorAll('.trip');
+    allTrips.forEach(trip => {
+        while (trip.firstChild) {
+            trip.removeChild(trip.firstChild);
+        }
     });
 }
 
