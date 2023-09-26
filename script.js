@@ -18,52 +18,46 @@ const liivaHagudi = document.getElementById('liivaHag');
 hagudiTallinn.addEventListener(('click'), () => {
     getTimesForJourney(stops.Hagudi, stops.TallinnW, hagudiTallinn);
 });
-
 tallinnUlemiste.addEventListener(('click'), () => {
     getTimesForJourney(stops.TallinnS, stops.Ulemiste, tallinnUlemiste);
 });
-
 hagudiUlemiste.addEventListener(('click'), () => {
     getTimesForCombinedJourney(stops.Hagudi, stops.TallinnW, stops.TallinnS, stops.Ulemiste, hagudiUlemiste);
 });
-
 hagudiLiiva.addEventListener(('click'), () => {
     getTimesForJourney(stops.Hagudi, stops.Liiva, hagudiLiiva);
 });
-
 ulemisteTallinn.addEventListener(('click'), () => {
     getTimesForJourney(stops.Ulemiste, stops.TallinnS, ulemisteTallinn);
 });
-
 tallinnHagudi.addEventListener(('click'), () => {
     getTimesForJourney(stops.TallinnW, stops.Hagudi, tallinnHagudi);
 });
-
 ulemisteHagudi.addEventListener(('click'), () => {
     getTimesForCombinedJourney(stops.Ulemiste, stops.TallinnS, stops.TallinnW, stops.Hagudi, ulemisteHagudi);
 });
-
 liivaHagudi.addEventListener(('click'), () => {
     getTimesForJourney(stops.Liiva, stops.Hagudi, liivaHagudi);
 });
 
-const options = { hour: 'numeric', minute: 'numeric' };
+const options = {hour: 'numeric', minute: 'numeric'};
+
+function getFormattedTime(time) {
+    return new Date(time).toLocaleTimeString(undefined, options);
+}
 
 function getTimesForJourney(start, end, journeyNode) {
     let journeyTitle = journeyNode.textContent;
     hideOtherJourneys(journeyNode)
     journeyNode.innerText = journeyTitle + '  loading...';
-    
 
     fetchData(start, end).then(res => {
         journeyNode.innerText = journeyTitle;
         res.forEach(trip => {
             let tripData = trip.trips[0]
             if (tripData.departure_time_min > getMinutesFromMidnight()) {
-                let departure = new Date(tripData.departure_time).toLocaleTimeString(undefined, options);
-                let arrival = new Date(tripData.arrival_time).toLocaleTimeString(undefined, options);
                 const listItem = document.createElement('p')
-                listItem.innerText = departure + ' - ' + arrival;
+                listItem.innerText = getFormattedTime(tripData.departure_time) + ' - ' + getFormattedTime(tripData.arrival_time);
                 journeyNode.appendChild(listItem)
             }
         });
@@ -76,31 +70,28 @@ function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
     let journeyTitle = journeyNode.textContent;
     hideOtherJourneys(journeyNode)
     journeyNode.innerText = journeyTitle + '  loading...';
-    
+
     fetchData(start, end).then(res => {
         fetchData(start2, end2).then(res2 => {
             journeyNode.innerText = journeyTitle;
             res.forEach(trip => {
-                let tripData = trip.trips[0]
-                let departureIsInFuture = tripData.departure_time_min > getMinutesFromMidnight();
+                let trip1Data = trip.trips[0]
+                let departureIsInFuture = trip1Data.departure_time_min > getMinutesFromMidnight();
                 if (departureIsInFuture) {
-                    let tripData2 = null;
-                    let gapBetween = null;
+                    let trip2Data = null;
+                    let gapBetweenTrips = null;
                     res2.forEach(trip2 => {
-                        let currentGapBetween = trip2.trips[0].departure_time_min - tripData.arrival_time_min
-                        if (!tripData2 && currentGapBetween > 0) {
-                            tripData2 = trip2.trips[0];
-                            gapBetween = currentGapBetween;
+                        let currentGapBetweenTrips = trip2.trips[0].departure_time_min - trip1Data.arrival_time_min
+                        if (!trip2Data && currentGapBetweenTrips > 0) {
+                            trip2Data = trip2.trips[0];
+                            gapBetweenTrips = currentGapBetweenTrips;
                         }
                     });
 
-                    if (!!tripData2) {
-                        let departure = new Date(tripData.departure_time).toLocaleTimeString(undefined, options);
-                        let arrival = new Date(tripData.arrival_time).toLocaleTimeString(undefined, options);
+                    if (!!trip2Data) {
                         const listItem = document.createElement('p');
-                        let departure2 = new Date(tripData2.departure_time).toLocaleTimeString(undefined, options);
-                        let arrival2 = new Date(tripData2.arrival_time).toLocaleTimeString(undefined, options);
-                        listItem.innerText = departure + ' - ' + arrival + ' (' + gapBetween + 'min) ' + departure2 + ' - ' + arrival2;
+                        listItem.innerText = getFormattedTime(trip1Data.departure_time) + ' - ' + getFormattedTime(trip1Data.arrival_time)
+                            + ' (' + gapBetweenTrips + 'min) ' + getFormattedTime(trip2Data.departure_time) + ' - ' + getFormattedTime(trip2Data.arrival_time);
                         journeyNode.appendChild(listItem);
                     }
                 }
