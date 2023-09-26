@@ -87,9 +87,10 @@ function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
                     let tripData2 = null;
                     let gapBetween = null;
                     res2.forEach(trip2 => {
-                        gapBetween = trip2.trips[0].departure_time_min - tripData.arrival_time_min
-                        if (!tripData2 && gapBetween > 0) {
+                        let currentGapBetween = trip2.trips[0].departure_time_min - tripData.arrival_time_min
+                        if (!tripData2 && currentGapBetween > 0) {
                             tripData2 = trip2.trips[0];
+                            gapBetween = currentGapBetween;
                         }
                     });
 
