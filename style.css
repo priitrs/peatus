@@ -45,17 +45,17 @@ p {
 
 .bold {
     display: inline;
-    font-weight: bold;
+    border-radius: 9px;
 }
 
 .bold.red {
-    color: red;
+    background-color: red;
 }
 
 .bold.yellow {
-    color: orange;
+    background-color: orange;
 }
 
 .bold.green {
-    color: green;
+    background-color: #00b092;
 }

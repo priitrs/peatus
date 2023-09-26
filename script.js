@@ -90,8 +90,8 @@ function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
 
                     if (!!trip2Data) {
                         const listItem = document.createElement('p');
-                        listItem.innerHTML = getFormattedTime(trip1Data.departure_time) + ' - ' + getFormattedTime(trip1Data.arrival_time)
-                            + `<span class="${(getColorForGap(gapBetweenTrips))}">` + ' (' + gapBetweenTrips + 'min) ' + '</span>' + getFormattedTime(trip2Data.departure_time) + ' - ' + getFormattedTime(trip2Data.arrival_time)
+                        listItem.innerHTML = getFormattedTime(trip1Data.departure_time) + ' - ' + getFormattedTime(trip1Data.arrival_time) + '&nbsp;&nbsp;' +
+                             `<span class="${(getColorForGap(gapBetweenTrips))}">` + ' ' + gapBetweenTrips + 'min ' + '</span>' + '&nbsp;&nbsp;' + getFormattedTime(trip2Data.departure_time) + ' - ' + getFormattedTime(trip2Data.arrival_time)
                         journeyNode.appendChild(listItem);
                     }
                 }
@@ -152,7 +152,6 @@ function fetchData(originStop, destinationStop) {
                     if (done) {
                         const jsonObject = JSON.parse(jsonString); // Deserialize
                         return jsonObject.journeys;
-                        const serializedJsonString = JSON.stringify(jsonObject, null, 2); // Serialize
                     } else {
                         jsonString += new TextDecoder('utf-8').decode(value);
                         return readData();
