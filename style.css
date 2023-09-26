@@ -20,6 +20,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    text-align: center;
 }
 
 div.trip {
@@ -36,10 +37,25 @@ div.trip {
 }
 
 p {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: inline;
     color: black;
     line-height: 10px;
     width: 100vw;
+}
+
+.bold {
+    display: inline;
+    font-weight: bold;
+}
+
+.bold.red {
+    color: red;
+}
+
+.bold.yellow {
+    color: orange;
+}
+
+.bold.green {
+    color: green;
 }

@@ -90,8 +90,8 @@ function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
 
                     if (!!trip2Data) {
                         const listItem = document.createElement('p');
-                        listItem.innerText = getFormattedTime(trip1Data.departure_time) + ' - ' + getFormattedTime(trip1Data.arrival_time)
-                            + ' (' + gapBetweenTrips + 'min) ' + getFormattedTime(trip2Data.departure_time) + ' - ' + getFormattedTime(trip2Data.arrival_time);
+                        listItem.innerHTML = getFormattedTime(trip1Data.departure_time) + ' - ' + getFormattedTime(trip1Data.arrival_time)
+                            + `<span class="${(getColorForGap(gapBetweenTrips))}">` + ' (' + gapBetweenTrips + 'min) ' + '</span>' + getFormattedTime(trip2Data.departure_time) + ' - ' + getFormattedTime(trip2Data.arrival_time)
                         journeyNode.appendChild(listItem);
                     }
                 }
@@ -100,6 +100,16 @@ function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
     }).catch(e => {
         console.log(e)
     });
+}
+
+function getColorForGap(gap) {
+    if (gap <= 15) {
+        return 'bold green';
+    } else if (gap < 30) {
+        return 'bold yellow';
+    } else {
+        return 'bold red'
+    }
 }
 
 function hideOtherJourneys(activeNode) {
