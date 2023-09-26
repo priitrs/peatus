@@ -107,6 +107,7 @@ function hideOtherJourneys(activeNode) {
     allTrips.forEach(trip => {
         if (activeNode.id !== trip.id) {
             trip.hidden = true;
+            trip.style.display = 'none';
         }
     });
 }
