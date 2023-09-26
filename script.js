@@ -51,7 +51,7 @@ const options = { hour: 'numeric', minute: 'numeric' };
 
 function getTimesForJourney(start, end, journeyNode) {
     let journeyTitle = journeyNode.textContent;
-    clearPreviousSearch()
+    hideOtherJourneys(journeyNode)
     journeyNode.innerText = journeyTitle + '  loading...';
     
 
@@ -74,7 +74,7 @@ function getTimesForJourney(start, end, journeyNode) {
 
 function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
     let journeyTitle = journeyNode.textContent;
-    clearPreviousSearch()
+    hideOtherJourneys(journeyNode)
     journeyNode.innerText = journeyTitle + '  loading...';
     
     fetchData(start, end).then(res => {
@@ -111,11 +111,11 @@ function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
     });
 }
 
-function clearPreviousSearch() {
+function hideOtherJourneys(activeNode) {
     const allTrips = document.querySelectorAll('.trip');
     allTrips.forEach(trip => {
-        while (trip.firstChild) {
-            trip.removeChild(trip.firstChild);
+        if (activeNode.id !== trip.id) {
+            trip.hidden = true;
         }
     });
 }
