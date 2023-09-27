@@ -46,18 +46,18 @@ liivaHagudi.addEventListener(('click'), () => {
 
 function toggleForSingleJourney(start, destination, node) {
     if (otherJourneysAreHidden) {
-        showAllJourneys(node);
+        toggleOtherJourneys(node);
     } else {
-        hideOtherJourneys(node);
+        toggleOtherJourneys(node);
         getTimesForSingleJourney(start, destination, node);
     }
 }
 
 function toggleForCombinedJourney(start, destination, start2, destination2, node) {
     if (otherJourneysAreHidden) {
-        showAllJourneys(node);
+        toggleOtherJourneys(node);
     } else {
-        hideOtherJourneys(node);
+        toggleOtherJourneys(node);
         getTimesForCombinedJourney(start, destination, start2, destination2, node);
     }
 }
@@ -130,29 +130,23 @@ function getColorForGap(gap) {
     }
 }
 
-function showAllJourneys(activeNode) {
-    allTrips.forEach(trip => {
-        if (activeNode.id === trip.id) {
-            let firstChild = trip.firstChild;
-            while (trip.firstChild) {
-                trip.removeChild(trip.firstChild);
-            }
-            trip.appendChild(firstChild);
-        }
-        trip.hidden = false;
-        trip.style.display = 'flex';
-    });
-    otherJourneysAreHidden = false;
+function removeTimesFromJourney(activeNode) {
+    let firstChild = activeNode.firstChild;
+    while (activeNode.firstChild) {
+        activeNode.removeChild(activeNode.firstChild);
+    }
+    activeNode.appendChild(firstChild);
 }
 
-function hideOtherJourneys(activeNode) {
+function toggleOtherJourneys(activeNode) {
+    otherJourneysAreHidden = !otherJourneysAreHidden;
     allTrips.forEach(trip => {
         if (activeNode.id !== trip.id) {
-            trip.hidden = true;
-            trip.style.display = 'none';
+            trip.hidden = otherJourneysAreHidden;
+            trip.style.display = otherJourneysAreHidden ? 'none' : 'flex';
         }
     });
-    otherJourneysAreHidden = true;
+    if (!otherJourneysAreHidden) removeTimesFromJourney(activeNode);
 }
 
 function getMinutesFromMidnight() {
