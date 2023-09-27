@@ -15,29 +15,47 @@ const tallinnHagudi = document.getElementById('talHag');
 const ulemisteHagudi = document.getElementById('uleHag');
 const liivaHagudi = document.getElementById('liivaHag');
 
+let otherJourneysAreHidden = false;
+
+function toggleForSingleJourney(start, destination, node) {
+    if (otherJourneysAreHidden) {
+        showAllJourneys(node);
+    } else {
+        getTimesForJourney(start, destination, node);
+    }
+}
+
+function toggleForCombinedJourney(start, destination, start2, destination2,  node) {
+    if (otherJourneysAreHidden) {
+        showAllJourneys(node);
+    } else {
+        getTimesForCombinedJourney(start, destination, start2, destination2,  node);
+    }
+}
+
 hagudiTallinn.addEventListener(('click'), () => {
-    getTimesForJourney(stops.Hagudi, stops.TallinnW, hagudiTallinn);
+    toggleForSingleJourney(stops.Hagudi, stops.TallinnW, hagudiTallinn);
 });
 tallinnUlemiste.addEventListener(('click'), () => {
-    getTimesForJourney(stops.TallinnS, stops.Ulemiste, tallinnUlemiste);
+    toggleForSingleJourney(stops.TallinnS, stops.Ulemiste, tallinnUlemiste);
 });
 hagudiUlemiste.addEventListener(('click'), () => {
-    getTimesForCombinedJourney(stops.Hagudi, stops.TallinnW, stops.TallinnS, stops.Ulemiste, hagudiUlemiste);
+    toggleForCombinedJourney(stops.Hagudi, stops.TallinnW, stops.TallinnS, stops.Ulemiste, hagudiUlemiste);
 });
 hagudiLiiva.addEventListener(('click'), () => {
-    getTimesForJourney(stops.Hagudi, stops.Liiva, hagudiLiiva);
+    toggleForSingleJourney(stops.Hagudi, stops.Liiva, hagudiLiiva);
 });
 ulemisteTallinn.addEventListener(('click'), () => {
-    getTimesForJourney(stops.Ulemiste, stops.TallinnS, ulemisteTallinn);
+    toggleForSingleJourney(stops.Ulemiste, stops.TallinnS, ulemisteTallinn);
 });
 tallinnHagudi.addEventListener(('click'), () => {
-    getTimesForJourney(stops.TallinnW, stops.Hagudi, tallinnHagudi);
+    toggleForSingleJourney(stops.TallinnW, stops.Hagudi, tallinnHagudi);
 });
 ulemisteHagudi.addEventListener(('click'), () => {
-    getTimesForCombinedJourney(stops.Ulemiste, stops.TallinnS, stops.TallinnW, stops.Hagudi, ulemisteHagudi);
+    toggleForCombinedJourney(stops.Ulemiste, stops.TallinnS, stops.TallinnW, stops.Hagudi, ulemisteHagudi);
 });
 liivaHagudi.addEventListener(('click'), () => {
-    getTimesForJourney(stops.Liiva, stops.Hagudi, liivaHagudi);
+    toggleForSingleJourney(stops.Liiva, stops.Hagudi, liivaHagudi);
 });
 
 const options = {hour: 'numeric', minute: 'numeric'};
@@ -112,7 +130,24 @@ function getColorForGap(gap) {
     }
 }
 
+function showAllJourneys(activeNode) {
+    otherJourneysAreHidden = false;
+    const allTrips = document.querySelectorAll('.trip');
+    allTrips.forEach(trip => {
+        if (activeNode.id === trip.id) {
+            let journeyTitle = activeNode.innerText;
+            while (trip.firstChild) {
+                trip.removeChild(trip.firstChild);
+            }
+            activeNode.innerText = journeyTitle;
+        }
+        trip.hidden = false;
+        trip.style.display = 'flex';
+    });
+}
+
 function hideOtherJourneys(activeNode) {
+    otherJourneysAreHidden = true;
     const allTrips = document.querySelectorAll('.trip');
     allTrips.forEach(trip => {
         if (activeNode.id !== trip.id) {
