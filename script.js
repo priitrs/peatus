@@ -1,9 +1,12 @@
 let stops = {
     "Hagudi": "64-6298-5",
+    "Valdeku": "64-6347-104",
     "Liiva": "64-6298-48",
     "TallinnW": "64-6298-93",
     "TallinnS": "64-6320-93",
-    "Ulemiste": "64-6320-117"
+    "Ulemiste": "64-6320-117",
+    "Nomme": "64-6347-57",
+    "Tondi": "64-6347-98"
 }
 
 const hagudiTallinn = document.getElementById('hagTal');
