@@ -66,6 +66,8 @@ function getFormattedJourneyTimes(tripData) {
 }
 
 function getTimesForSingleJourney(start, end, journeyNode) {
+    let journey = journeyNode.firstChild.textContent;
+    journeyNode.firstChild.textContent = journey + ' loading...'
     fetchData(start, end).then(res => {
         res.forEach(trip => {
             let tripData = trip.trips[0]
@@ -76,16 +78,16 @@ function getTimesForSingleJourney(start, end, journeyNode) {
                 journeyNode.appendChild(listItem)
             }
         });
+    }).then(() => {
+        journeyNode.firstChild.textContent = journey
     }).catch(e => {
         console.log(e)
     });
 }
 
-function getFormattedGap(gapBetweenTrips) {
-    return '&nbsp;&nbsp;' + `<span class="${(getColorForGap(gapBetweenTrips))}">` + ' ' + gapBetweenTrips + 'min ' + `</span>` + '&nbsp;&nbsp;';
-}
-
 function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
+    let journey = journeyNode.firstChild.textContent;
+    journeyNode.firstChild.textContent = journey + ' loading...'
     fetchData(start, end).then(res => {
         fetchData(start2, end2).then(res2 => {
             res.forEach(trip => {
@@ -110,9 +112,15 @@ function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
                 }
             })
         });
+    }).then(() => {
+        journeyNode.firstChild.textContent = journey
     }).catch(e => {
         console.log(e)
     });
+}
+
+function getFormattedGap(gapBetweenTrips) {
+    return '&nbsp;&nbsp;' + `<span class="${(getColorForGap(gapBetweenTrips))}">` + ' ' + gapBetweenTrips + 'min ' + `</span>` + '&nbsp;&nbsp;';
 }
 
 function getColorForGap(gap) {
