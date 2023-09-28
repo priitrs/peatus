@@ -166,11 +166,10 @@ function fetchData(originStop, destinationStop) {
             'Accept': 'application/json, text/plain, */*',
         },
         body: JSON.stringify({
-            "date": getCurrentDate,
             "origin_stop_area_id": originStop,
             "destination_stop_area_id": destinationStop,
             "channel": "web"
-        }), // Include a JSON payload for POST requests
+        }),
     })
         .then(response => {
             let jsonString = '';
@@ -193,12 +192,4 @@ function fetchData(originStop, destinationStop) {
         .catch(error => {
             console.error('Fetch error:', error);
         });
-}
-
-function getCurrentDate() {
-    const year = currentDate.getFullYear(); // Get the current year
-    const month = currentDate.getMonth();    // Get the current month (0-11, where 0 is January)
-    const day = currentDate.getDate();       // Get the current day of the month (1-31)
-
-    return `${year}-${month + 1}-${day}`;
 }
