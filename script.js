@@ -9,6 +9,17 @@ let stops = {
     "Tondi": "64-6347-98"
 }
 
+let names =  {
+    "hagTal": "Hagudi - Tallinn",
+    "talUle": "Tallinn - Ülemiste",
+    "hagUle": "Hagudi - Tallinn - Ülemiste",
+    "hagLiiva": "Hagudi - Liiva",
+    "uleTal": "Ülemiste - Tallinn",
+    "talHag": "Tallinn - Hagudi",
+    "uleHag": "Ülemiste - Tallinn - Hagudi",
+    "liivaHag": "Liiva - Hagudi",
+}
+
 const hagudiTallinn = document.getElementById('hagTal');
 const tallinnUlemiste = document.getElementById('talUle');
 const hagudiUlemiste = document.getElementById('hagUle');
@@ -56,21 +67,12 @@ function toggleForJourney(start, destination, start2, destination2, node) {
         }
     } else {
         removeTimesFromJourney(node);
+        toggleOtherJourneysVisibility(node);
     }
-    toggleOtherJourneysVisibility(node);
-}
-
-function getFormattedTime(time) {
-    return new Date(time).toLocaleTimeString(undefined, {hour: 'numeric', minute: 'numeric'});
-}
-
-function getFormattedJourneyTimes(tripData) {
-    return getFormattedTime(tripData.departure_time) + ' - ' + getFormattedTime(tripData.arrival_time);
 }
 
 function getTimesForSingleJourney(start, end, journeyNode) {
-    let journey = journeyNode.firstChild.textContent;
-    journeyNode.firstChild.textContent = journey + ' loading...'
+    addLoadingToJourney(journeyNode);
     fetchData(start, end).then(res => {
         res.forEach(trip => {
             let tripData = trip.trips[0]
@@ -82,15 +84,14 @@ function getTimesForSingleJourney(start, end, journeyNode) {
             }
         });
     }).then(() => {
-        journeyNode.firstChild.textContent = journey
+        removeLoadingTripsAndShowOtherJourneys(journeyNode);
     }).catch(e => {
         console.log(e)
     });
 }
 
 function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
-    let journey = journeyNode.firstChild.textContent;
-    journeyNode.firstChild.textContent = journey + ' loading...'
+    addLoadingToJourney(journeyNode);
     fetchData(start, end).then(res => {
         fetchData(start2, end2).then(res2 => {
             res.forEach(trip => {
@@ -116,28 +117,23 @@ function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
             })
         });
     }).then(() => {
-        journeyNode.firstChild.textContent = journey
+        removeLoadingTripsAndShowOtherJourneys(journeyNode);
     }).catch(e => {
         console.log(e)
     });
 }
 
-function getFormattedGap(gapBetweenTrips) {
-    return '&nbsp;&nbsp;' + `<span class="${(getColorForGap(gapBetweenTrips))}">` + ' ' + gapBetweenTrips + 'min ' + `</span>` + '&nbsp;&nbsp;';
+function removeLoadingTripsAndShowOtherJourneys(journeyNode) {
+    journeyNode.firstChild.textContent = names[journeyNode.id];
+    otherJourneysAreHidden = true;
+    toggleOtherJourneysVisibility(journeyNode);
 }
 
-function getColorForGap(gap) {
-    if (gap <= 15) {
-        return 'bold green';
-    } else if (gap < 30) {
-        return 'bold yellow';
-    } else {
-        return 'bold red'
-    }
+function addLoadingToJourney(journeyNode) {
+    journeyNode.firstChild.textContent = names[journeyNode.id] + ' loading...'
 }
 
 function toggleOtherJourneysVisibility(activeNode) {
-    otherJourneysAreHidden = !otherJourneysAreHidden;
     allTrips.forEach(trip => {
         if (activeNode.id !== trip.id) {
             trip.hidden = otherJourneysAreHidden;
@@ -152,6 +148,29 @@ function removeTimesFromJourney(activeNode) {
         activeNode.removeChild(activeNode.firstChild);
     }
     activeNode.appendChild(firstChild);
+    otherJourneysAreHidden = false;
+}
+
+function getFormattedJourneyTimes(tripData) {
+    return getFormattedTime(tripData.departure_time) + ' - ' + getFormattedTime(tripData.arrival_time);
+}
+
+function getFormattedTime(time) {
+    return new Date(time).toLocaleTimeString(undefined, {hour: 'numeric', minute: 'numeric'});
+}
+
+function getFormattedGap(gapBetweenTrips) {
+    return '&nbsp;&nbsp;' + `<span class="${(getColorForGap(gapBetweenTrips))}">` + ' ' + gapBetweenTrips + 'min ' + `</span>` + '&nbsp;&nbsp;';
+}
+
+function getColorForGap(gap) {
+    if (gap <= 15) {
+        return 'bold green';
+    } else if (gap < 30) {
+        return 'bold yellow';
+    } else {
+        return 'bold red'
+    }
 }
 
 function getMinutesFromMidnight() {
@@ -177,19 +196,16 @@ function fetchData(originStop, destinationStop) {
         .then(response => {
             let jsonString = '';
             const reader = response.body.getReader();
-
             function readData() {
                 return reader.read().then(({value, done}) => {
                     if (done) {
-                        const jsonObject = JSON.parse(jsonString); // Deserialize
-                        return jsonObject.journeys;
+                        return JSON.parse(jsonString).journeys;
                     } else {
                         jsonString += new TextDecoder('utf-8').decode(value);
                         return readData();
                     }
                 });
             }
-
             return readData();
         })
         .catch(error => {
