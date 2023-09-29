@@ -125,12 +125,12 @@ function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
 
 function removeLoadingTripsAndShowOtherJourneys(journeyNode) {
     journeyNode.firstChild.textContent = names[journeyNode.id];
-    otherJourneysAreHidden = true;
-    toggleOtherJourneysVisibility(journeyNode);
 }
 
 function addLoadingToJourney(journeyNode) {
     journeyNode.firstChild.textContent = names[journeyNode.id] + ' loading...'
+    otherJourneysAreHidden = true;
+    toggleOtherJourneysVisibility(journeyNode);
 }
 
 function toggleOtherJourneysVisibility(activeNode) {
