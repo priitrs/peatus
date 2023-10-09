@@ -34,70 +34,82 @@ const allTrips = document.querySelectorAll('.trip');
 let otherJourneysAreHidden = false;
 
 hagudiTallinn.addEventListener(('click'), () => {
-    toggleForJourney(stops.Hagudi, stops.TallinnW, null, null, hagudiTallinn);
+    handleClickOnJourney(stops.Hagudi, stops.TallinnW, null, null, hagudiTallinn);
 });
 tallinnUlemiste.addEventListener(('click'), () => {
-    toggleForJourney(stops.TallinnS, stops.Ulemiste, null, null, tallinnUlemiste);
+    handleClickOnJourney(stops.TallinnS, stops.Ulemiste, null, null, tallinnUlemiste);
 });
 hagudiUlemiste.addEventListener(('click'), () => {
-    toggleForJourney(stops.Hagudi, stops.TallinnW, stops.TallinnS, stops.Ulemiste, hagudiUlemiste);
+    handleClickOnJourney(stops.Hagudi, stops.TallinnW, stops.TallinnS, stops.Ulemiste, hagudiUlemiste);
 });
 hagudiLiiva.addEventListener(('click'), () => {
-    toggleForJourney(stops.Hagudi, stops.Liiva, null, null, hagudiLiiva);
+    handleClickOnJourney(stops.Hagudi, stops.Liiva, null, null, hagudiLiiva);
 });
 ulemisteTallinn.addEventListener(('click'), () => {
-    toggleForJourney(stops.Ulemiste, stops.TallinnS, null, null, ulemisteTallinn);
+    handleClickOnJourney(stops.Ulemiste, stops.TallinnS, null, null, ulemisteTallinn);
 });
 tallinnHagudi.addEventListener(('click'), () => {
-    toggleForJourney(stops.TallinnW, stops.Hagudi, null, null, tallinnHagudi);
+    handleClickOnJourney(stops.TallinnW, stops.Hagudi, null, null, tallinnHagudi);
 });
 ulemisteHagudi.addEventListener(('click'), () => {
-    toggleForJourney(stops.Ulemiste, stops.TallinnS, stops.TallinnW, stops.Hagudi, ulemisteHagudi);
+    handleClickOnJourney(stops.Ulemiste, stops.TallinnS, stops.TallinnW, stops.Hagudi, ulemisteHagudi);
 });
 liivaHagudi.addEventListener(('click'), () => {
-    toggleForJourney(stops.Liiva, stops.Hagudi, null, null, liivaHagudi);
+    handleClickOnJourney(stops.Liiva, stops.Hagudi, null, null, liivaHagudi);
 });
 
-function toggleForJourney(start, destination, start2, destination2, node) {
-    if (!otherJourneysAreHidden) {
-        if (start2 === null && destination2 === null) {
-            getTimesForSingleJourney(start, destination, node);
-        } else {
-            getTimesForCombinedJourney(start, destination, start2, destination2, node);
-        }
-    } else {
-        removeTimesFromJourney(node);
-        toggleOtherJourneysVisibility(node);
-    }
+function prepareSearchParameters(start, destination, start2, destination2) {
+    let params = {};
+    params.start1 = start;
+    params.start2 = start2;
+    params.destination1 = destination;
+    params.destination2 = destination2;
+    params.isSingleJourney = start2 === null || destination2 === null;
+    return params;
 }
 
-function getTimesForSingleJourney(start, end, journeyNode) {
-    addLoadingToJourney(journeyNode);
-    fetchData(start, end).then(res => {
+function handleClickOnJourney(start, destination, start2, destination2, node) {
+    return otherJourneysAreHidden ? clearLastSearchResults(node)
+        : getTimesForJourney(prepareSearchParameters(start, destination, start2, destination2), node);
+}
+
+function getTimesForJourney(params, node) {
+    return params.isSingleJourney ? getTimesForSingleJourney(params, node) : getTimesForCombinedJourney(params, node);
+}
+
+function getTripDepartureIsInFuture(trip) {
+    return trip.trips[0].departure_time_min > getMinutesFromMidnight();
+}
+
+function addSearchResultToJourney(formattedJourneyTime, journeyNode) {
+    const listItem = document.createElement('p')
+    listItem.innerText = formattedJourneyTime;
+    journeyNode.appendChild(listItem)
+}
+
+function getTimesForSingleJourney(params, journeyNode) {
+    startLoadingAndHideOtherJourneys(journeyNode);
+    fetchData(params.start1, params.destination1).then(res => {
         res.forEach(trip => {
-            let tripData = trip.trips[0]
-            let tripDepartureIsInFuture = tripData.departure_time_min > getMinutesFromMidnight();
-            if (tripDepartureIsInFuture) {
-                const listItem = document.createElement('p')
-                listItem.innerText = getFormattedJourneyTimes(tripData);
-                journeyNode.appendChild(listItem)
+            if (getTripDepartureIsInFuture(trip)) {
+                let formattedJourneyTime = getFormattedJourneyTimes(trip.trips[0]);
+                addSearchResultToJourney(formattedJourneyTime, journeyNode);
             }
         });
     }).then(() => {
-        removeLoadingTripsAndShowOtherJourneys(journeyNode);
+        removeLoadingText(journeyNode);
     }).catch(e => {
         console.log(e)
     });
 }
 
-function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
-    addLoadingToJourney(journeyNode);
-    fetchData(start, end).then(res => {
-        fetchData(start2, end2).then(res2 => {
+function getTimesForCombinedJourney(params, journeyNode) {
+    startLoadingAndHideOtherJourneys(journeyNode);
+    fetchData(params.start1, params.destination1).then(res => {
+        fetchData(params.start2, params.destination2).then(res2 => {
             res.forEach(trip => {
-                let trip1Data = trip.trips[0]
-                let tripDepartureIsInFuture = trip1Data.departure_time_min > getMinutesFromMidnight();
-                if (tripDepartureIsInFuture) {
+                if (getTripDepartureIsInFuture(trip)) {
+                    let trip1Data = trip.trips[0]
                     let trip2Data = null;
                     let gapBetweenTrips = null;
                     res2.forEach(trip2 => {
@@ -117,38 +129,40 @@ function getTimesForCombinedJourney(start, end, start2, end2, journeyNode) {
             })
         });
     }).then(() => {
-        removeLoadingTripsAndShowOtherJourneys(journeyNode);
+        removeLoadingText(journeyNode);
     }).catch(e => {
         console.log(e)
     });
 }
 
-function removeLoadingTripsAndShowOtherJourneys(journeyNode) {
+function removeLoadingText(journeyNode) {
     journeyNode.firstChild.textContent = names[journeyNode.id];
 }
 
-function addLoadingToJourney(journeyNode) {
+function startLoadingAndHideOtherJourneys(journeyNode) {
     journeyNode.firstChild.textContent = names[journeyNode.id] + ' loading...'
     otherJourneysAreHidden = true;
-    toggleOtherJourneysVisibility(journeyNode);
+    toggleJourneysListVisibility(journeyNode);
 }
 
-function toggleOtherJourneysVisibility(activeNode) {
-    allTrips.forEach(trip => {
-        if (activeNode.id !== trip.id) {
-            trip.hidden = otherJourneysAreHidden;
-            trip.style.display = otherJourneysAreHidden ? 'none' : 'flex';
+function toggleJourneysListVisibility(activeNode) {
+    allTrips.forEach(journey => {
+        let currentIsSelectedJourney = activeNode.id === journey.id;
+        if (!currentIsSelectedJourney) {
+            journey.hidden = otherJourneysAreHidden;
+            journey.style.display = otherJourneysAreHidden ? 'none' : 'flex';
         }
     });
 }
 
-function removeTimesFromJourney(activeNode) {
+function clearLastSearchResults(activeNode) {
     let firstChild = activeNode.firstChild;
     while (activeNode.firstChild) {
         activeNode.removeChild(activeNode.firstChild);
     }
     activeNode.appendChild(firstChild);
     otherJourneysAreHidden = false;
+    toggleJourneysListVisibility(activeNode);
 }
 
 function getFormattedJourneyTimes(tripData) {
@@ -163,10 +177,10 @@ function getFormattedGap(gapBetweenTrips) {
     return '&nbsp;&nbsp;' + `<span class="${(getColorForGap(gapBetweenTrips))}">` + ' ' + gapBetweenTrips + 'min ' + `</span>` + '&nbsp;&nbsp;';
 }
 
-function getColorForGap(gap) {
-    if (gap <= 15) {
+function getColorForGap(minutesBetweenTrips) {
+    if (minutesBetweenTrips <= 15) {
         return 'bold green';
-    } else if (gap < 30) {
+    } else if (minutesBetweenTrips < 30) {
         return 'bold yellow';
     } else {
         return 'bold red'
