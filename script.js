@@ -130,22 +130,16 @@ function getTimesForCombinedJourney() {
         fetchData(params.start2, params.destination2).then(res2 => {
             res.forEach(trip => {
                 if (getTripDepartureIsInFuture(trip)) {
-                    let trip1Data = trip.trips[0]
-                    let trip2Data = null;
                     let gapBetweenTrips = null;
                     res2.forEach(trip2 => {
-                        let currentGapBetweenTrips = trip2.trips[0].departure_time_min - trip1Data.arrival_time_min
-                        if (!trip2Data && currentGapBetweenTrips > 0) {
-                            trip2Data = trip2.trips[0];
-                            gapBetweenTrips = currentGapBetweenTrips;
+                        if (!gapBetweenTrips) {
+                            let currentGapBetweenTrips = trip2.trips[0].departure_time_min - trip.trips[0].arrival_time_min
+                            if (currentGapBetweenTrips > 0) {
+                                gapBetweenTrips = currentGapBetweenTrips;
+                                addCombinedTripToSearchResults(trip, gapBetweenTrips, trip2);
+                            }
                         }
                     });
-
-                    if (!!trip2Data) {
-                        const listItem = document.createElement('p');
-                        listItem.innerHTML = getFormattedJourneyTimes(trip1Data) + getFormattedGap(gapBetweenTrips) + getFormattedJourneyTimes(trip2Data)
-                        params.node.appendChild(listItem);
-                    }
                 }
             })
         });
@@ -154,6 +148,12 @@ function getTimesForCombinedJourney() {
     }).catch(e => {
         console.log(e)
     });
+}
+
+function addCombinedTripToSearchResults(trip, gapBetweenTrips, trip2) {
+    const listItem = document.createElement('p');
+    listItem.innerHTML = getFormattedJourneyTimes(trip.trips[0]) + getFormattedGap(gapBetweenTrips) + getFormattedJourneyTimes(trip2.trips[0])
+    params.node.appendChild(listItem);
 }
 
 function toggleJourneysListVisibility() {
@@ -168,12 +168,11 @@ function toggleJourneysListVisibility() {
 }
 
 function clearLastSearchResults() {
-    let activeNode = params.node;
-    let firstChild = activeNode.firstChild;
-    while (activeNode.firstChild) {
-        activeNode.removeChild(activeNode.firstChild);
+    let firstChild = params.node.firstChild;
+    while (params.node.firstChild) {
+        params.node.removeChild(params.node.firstChild);
     }
-    activeNode.appendChild(firstChild);
+    params.node.appendChild(firstChild);
 }
 
 function clearLastSearch() {
