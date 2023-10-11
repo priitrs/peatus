@@ -130,14 +130,11 @@ function getTimesForCombinedJourney() {
         fetchData(params.start2, params.destination2).then(res2 => {
             res.forEach(trip => {
                 if (getTripDepartureIsInFuture(trip)) {
-                    let gapBetweenTrips = null;
+                    let connectingTripFound = false;
                     res2.forEach(trip2 => {
-                        if (!gapBetweenTrips) {
-                            let currentGapBetweenTrips = trip2.trips[0].departure_time_min - trip.trips[0].arrival_time_min
-                            if (currentGapBetweenTrips > 0) {
-                                gapBetweenTrips = currentGapBetweenTrips;
-                                addCombinedTripToSearchResults(trip, gapBetweenTrips, trip2);
-                            }
+                        if (!connectingTripFound && (trip2.trips[0].departure_time_min > trip.trips[0].arrival_time_min)) {
+                           connectingTripFound = true;
+                           addCombinedTripToSearchResults(trip, trip2);
                         }
                     });
                 }
@@ -150,7 +147,8 @@ function getTimesForCombinedJourney() {
     });
 }
 
-function addCombinedTripToSearchResults(trip, gapBetweenTrips, trip2) {
+function addCombinedTripToSearchResults(trip, trip2) {
+    let gapBetweenTrips = trip2.trips[0].departure_time_min - trip.trips[0].arrival_time_min;
     const listItem = document.createElement('p');
     listItem.innerHTML = getFormattedJourneyTimes(trip.trips[0]) + getFormattedGap(gapBetweenTrips) + getFormattedJourneyTimes(trip2.trips[0])
     params.node.appendChild(listItem);
