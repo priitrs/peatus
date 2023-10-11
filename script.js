@@ -32,7 +32,11 @@ const liivaHagudi = document.getElementById('liivaHag');
 const allTrips = document.querySelectorAll('.trip');
 
 let otherJourneysAreHidden = false;
+let params = {};
 
+otherJourneysAreHidden.addEventListener(('change'), () => {
+    console.log('otherJourneysAreHidden = ' + otherJourneysAreHidden)
+});
 hagudiTallinn.addEventListener(('click'), () => {
     handleClickOnJourney(stops.Hagudi, stops.TallinnW, null, null, hagudiTallinn);
 });
@@ -54,11 +58,10 @@ tallinnHagudi.addEventListener(('click'), () => {
 ulemisteHagudi.addEventListener(('click'), () => {
     handleClickOnJourney(stops.Ulemiste, stops.TallinnS, stops.TallinnW, stops.Hagudi, ulemisteHagudi);
 });
+
 liivaHagudi.addEventListener(('click'), () => {
     handleClickOnJourney(stops.Liiva, stops.Hagudi, null, null, liivaHagudi);
 });
-
-let params = {};
 
 function handleClickOnJourney(start, destination, start2, destination2, node) {
     prepareSearchParameters(start, destination, start2, destination2, node);
