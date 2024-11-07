@@ -6,7 +6,8 @@ let stops = {
     "TallinnS": "64-6320-93",
     "Ulemiste": "64-6320-117",
     "Nomme": "64-6347-57",
-    "Tondi": "64-6347-98"
+    "Tondi": "64-6347-98",
+    "Rapla": "64-6298-78"
 }
 
 let names = {
@@ -18,6 +19,8 @@ let names = {
     "talHag": "Tallinn - Hagudi",
     "uleHag": "Ülemiste - Tallinn - Hagudi",
     "liivaHag": "Liiva - Hagudi",
+    "hagRapla": "Hagudi - Rapla",
+    "raplaHag": "Rapla - Hagudi"
 }
 
 const hagudiTallinn = document.getElementById('hagTal');
@@ -28,6 +31,8 @@ const ulemisteTallinn = document.getElementById('uleTal');
 const tallinnHagudi = document.getElementById('talHag');
 const ulemisteHagudi = document.getElementById('uleHag');
 const liivaHagudi = document.getElementById('liivaHag');
+const hagudiRapla = document.getElementById('hagRapla');
+const raplaHagudi = document.getElementById('raplaHag');
 
 const allTrips = document.querySelectorAll('.trip');
 
@@ -56,9 +61,14 @@ tallinnHagudi.addEventListener(('click'), () => {
 ulemisteHagudi.addEventListener(('click'), () => {
     handleClickOnJourney(stops.Ulemiste, stops.TallinnS, stops.TallinnW, stops.Hagudi, ulemisteHagudi);
 });
-
 liivaHagudi.addEventListener(('click'), () => {
     handleClickOnJourney(stops.Liiva, stops.Hagudi, null, null, liivaHagudi);
+});
+hagudiRapla.addEventListener(('click'), () => {
+    handleClickOnJourney(stops.Hagudi, stops.Rapla, null, null, hagudiRapla);
+});
+raplaHagudi.addEventListener(('click'), () => {
+    handleClickOnJourney(stops.Rapla, stops.Hagudi, null, null, raplaHagudi);
 });
 
 function handleClickOnJourney(start, destination, start2, destination2, node) {
