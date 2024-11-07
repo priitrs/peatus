@@ -34,9 +34,7 @@ const allTrips = document.querySelectorAll('.trip');
 let otherJourneysAreHidden = false;
 let params = {};
 
-otherJourneysAreHidden.addEventListener(('change'), () => {
-    console.log('otherJourneysAreHidden = ' + otherJourneysAreHidden)
-});
+
 hagudiTallinn.addEventListener(('click'), () => {
     handleClickOnJourney(stops.Hagudi, stops.TallinnW, null, null, hagudiTallinn);
 });
