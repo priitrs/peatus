@@ -1,13 +1,15 @@
 let stops = {
-    "Hagudi": "64-6298-5",
+    "Hagudi": "64-8852-5",
     "Valdeku": "64-6347-104",
     "Liiva": "64-6298-48",
-    "TallinnW": "64-6298-93",
+    "TallinnW": "64-8852-93",
     "TallinnS": "64-6320-93",
     "Ulemiste": "64-6320-117",
     "Nomme": "64-6347-57",
     "Tondi": "64-6347-98",
-    "Rapla": "64-6298-78"
+    "Rapla": "64-8852-78",
+    "Saku": "64-8852-85",
+    "Kasemetsa": "64-8852-17"
 }
 
 let names = {
@@ -20,7 +22,14 @@ let names = {
     "uleHag": "Ülemiste - Tallinn - Hagudi",
     "liivaHag": "Liiva - Hagudi",
     "hagRapla": "Hagudi - Rapla",
-    "raplaHag": "Rapla - Hagudi"
+    "raplaHag": "Rapla - Hagudi",
+    "kasRapla": "Kasemetsa - Rapla",
+    "raplaKas": "Rapla - Kasemetsa",
+    "sakuRapla": "Saku - Rapla",
+    "raplaSaku": "Rapla - Saku",
+    "kasHag": "Kasemetsa - Hagudi",
+    "hagKas": "Hagudi - Kasemetsa",
+
 }
 
 const hagudiTallinn = document.getElementById('hagTal');
@@ -33,6 +42,12 @@ const ulemisteHagudi = document.getElementById('uleHag');
 const liivaHagudi = document.getElementById('liivaHag');
 const hagudiRapla = document.getElementById('hagRapla');
 const raplaHagudi = document.getElementById('raplaHag');
+const kasemetsaRapla = document.getElementById('kasRapla');
+const raplaKasemetsa = document.getElementById('raplaKas');
+const sakuRapla = document.getElementById('sakuRapla');
+const raplaSaku = document.getElementById('raplaSaku');
+const kasemetsaHagudi = document.getElementById('kasHag');
+const hagudiKasemetsa = document.getElementById('hagKas');
 
 const allTrips = document.querySelectorAll('.trip');
 
@@ -46,29 +61,35 @@ hagudiTallinn.addEventListener(('click'), () => {
 tallinnUlemiste.addEventListener(('click'), () => {
     handleClickOnJourney(stops.TallinnS, stops.Ulemiste, null, null, tallinnUlemiste);
 });
-hagudiUlemiste.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Hagudi, stops.TallinnW, stops.TallinnS, stops.Ulemiste, hagudiUlemiste);
-});
-hagudiLiiva.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Hagudi, stops.Liiva, null, null, hagudiLiiva);
-});
 ulemisteTallinn.addEventListener(('click'), () => {
     handleClickOnJourney(stops.Ulemiste, stops.TallinnS, null, null, ulemisteTallinn);
 });
 tallinnHagudi.addEventListener(('click'), () => {
     handleClickOnJourney(stops.TallinnW, stops.Hagudi, null, null, tallinnHagudi);
 });
-ulemisteHagudi.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Ulemiste, stops.TallinnS, stops.TallinnW, stops.Hagudi, ulemisteHagudi);
-});
-liivaHagudi.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Liiva, stops.Hagudi, null, null, liivaHagudi);
-});
 hagudiRapla.addEventListener(('click'), () => {
     handleClickOnJourney(stops.Hagudi, stops.Rapla, null, null, hagudiRapla);
 });
 raplaHagudi.addEventListener(('click'), () => {
     handleClickOnJourney(stops.Rapla, stops.Hagudi, null, null, raplaHagudi);
+});
+kasemetsaRapla.addEventListener(('click'), () => {
+    handleClickOnJourney(stops.Kasemetsa, stops.Rapla, null, null, kasemetsaRapla);
+});
+raplaKasemetsa.addEventListener(('click'), () => {
+    handleClickOnJourney(stops.Rapla, stops.Kasemetsa, null, null, raplaKasemetsa);
+});
+sakuRapla.addEventListener(('click'), () => {
+    handleClickOnJourney(stops.Saku, stops.Rapla, null, null, sakuRapla);
+});
+raplaSaku.addEventListener(('click'), () => {
+    handleClickOnJourney(stops.Rapla, stops.Saku, null, null, raplaSaku);
+});
+kasemetsaHagudi.addEventListener(('click'), () => {
+    handleClickOnJourney(stops.Kasemetsa, stops.Hagudi, null, null, kasemetsaHagudi);
+});
+hagudiKasemetsa.addEventListener(('click'), () => {
+    handleClickOnJourney(stops.Hagudi, stops.Kasemetsa, null, null, hagudiKasemetsa);
 });
 
 function handleClickOnJourney(start, destination, start2, destination2, node) {
