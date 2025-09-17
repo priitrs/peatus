@@ -12,34 +12,10 @@ let stops = {
     "Kasemetsa": "64-8852-17"
 }
 
-let names = {
-    "hagTal": "Hagudi - Tallinn",
-    "talUle": "Tallinn - Ülemiste",
-    "hagUle": "Hagudi - Tallinn - Ülemiste",
-    "hagLiiva": "Hagudi - Liiva",
-    "uleTal": "Ülemiste - Tallinn",
-    "talHag": "Tallinn - Hagudi",
-    "uleHag": "Ülemiste - Tallinn - Hagudi",
-    "liivaHag": "Liiva - Hagudi",
-    "hagRapla": "Hagudi - Rapla",
-    "raplaHag": "Rapla - Hagudi",
-    "kasRapla": "Kasemetsa - Rapla",
-    "raplaKas": "Rapla - Kasemetsa",
-    "sakuRapla": "Saku - Rapla",
-    "raplaSaku": "Rapla - Saku",
-    "kasHag": "Kasemetsa - Hagudi",
-    "hagKas": "Hagudi - Kasemetsa",
-
-}
-
 const hagudiTallinn = document.getElementById('hagTal');
 const tallinnUlemiste = document.getElementById('talUle');
-const hagudiUlemiste = document.getElementById('hagUle');
-const hagudiLiiva = document.getElementById('hagLiiva');
 const ulemisteTallinn = document.getElementById('uleTal');
 const tallinnHagudi = document.getElementById('talHag');
-const ulemisteHagudi = document.getElementById('uleHag');
-const liivaHagudi = document.getElementById('liivaHag');
 const hagudiRapla = document.getElementById('hagRapla');
 const raplaHagudi = document.getElementById('raplaHag');
 const kasemetsaRapla = document.getElementById('kasRapla');
@@ -54,43 +30,26 @@ const allTrips = document.querySelectorAll('.trip');
 let otherJourneysAreHidden = false;
 let params = {};
 
+let config = [
+    {node: hagudiTallinn, start: stops.Hagudi, end: stops.TallinnW},
+    {node: tallinnUlemiste, start: stops.TallinnS, end: stops.Ulemiste},
+    {node: ulemisteTallinn, start: stops.Ulemiste, end: stops.TallinnS},
+    {node: tallinnHagudi, start: stops.TallinnW, end: stops.Hagudi},
+    {node: hagudiRapla, start: stops.Hagudi, end: stops.Rapla},
+    {node: raplaHagudi, start: stops.Rapla, end: stops.Hagudi},
+    {node: kasemetsaRapla, start: stops.Kasemetsa, end: stops.Rapla},
+    {node: raplaKasemetsa, start: stops.Rapla, end: stops.Kasemetsa},
+    {node: sakuRapla, start: stops.Saku, end: stops.Rapla},
+    {node: raplaSaku, start: stops.Rapla, end: stops.Saku},
+    {node: kasemetsaHagudi, start: stops.Kasemetsa, end: stops.Hagudi},
+    {node: hagudiKasemetsa, start: stops.Hagudi, end: stops.Kasemetsa},
+]
 
-hagudiTallinn.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Hagudi, stops.TallinnW, null, null, hagudiTallinn);
-});
-tallinnUlemiste.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.TallinnS, stops.Ulemiste, null, null, tallinnUlemiste);
-});
-ulemisteTallinn.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Ulemiste, stops.TallinnS, null, null, ulemisteTallinn);
-});
-tallinnHagudi.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.TallinnW, stops.Hagudi, null, null, tallinnHagudi);
-});
-hagudiRapla.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Hagudi, stops.Rapla, null, null, hagudiRapla);
-});
-raplaHagudi.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Rapla, stops.Hagudi, null, null, raplaHagudi);
-});
-kasemetsaRapla.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Kasemetsa, stops.Rapla, null, null, kasemetsaRapla);
-});
-raplaKasemetsa.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Rapla, stops.Kasemetsa, null, null, raplaKasemetsa);
-});
-sakuRapla.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Saku, stops.Rapla, null, null, sakuRapla);
-});
-raplaSaku.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Rapla, stops.Saku, null, null, raplaSaku);
-});
-kasemetsaHagudi.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Kasemetsa, stops.Hagudi, null, null, kasemetsaHagudi);
-});
-hagudiKasemetsa.addEventListener(('click'), () => {
-    handleClickOnJourney(stops.Hagudi, stops.Kasemetsa, null, null, hagudiKasemetsa);
-});
+config.forEach( c => {
+    c.node.addEventListener(('click'), () => {
+        handleClickOnJourney(c.start, c.end, null, null, c.node);
+    });
+})
 
 function handleClickOnJourney(start, destination, start2, destination2, node) {
     prepareSearchParameters(start, destination, start2, destination2, node);
@@ -123,16 +82,17 @@ function getTimesForSingleJourney() {
         console.log(e)
     });
 }
+const loading = ' loading...'
 
 function addLoadingText() {
-    params.node.firstChild.textContent = names[params.node.id] + ' loading...'
+    params.node.firstChild.textContent = params.node.firstChild.textContent + loading
 }
 
 function addToSearchResultsIfInFuture(trip) {
-    if (getTripDepartureIsInFuture(trip)) {
-        let formattedJourneyTime = getFormattedJourneyTimes(trip.trips[0]);
-        addSearchResultToJourney(formattedJourneyTime);
-    }
+    let result = getTripDepartureIsInFuture(trip) ? '• ' : '';
+    result += getFormattedJourneyTimes(trip.trips[0]);
+    result += '  (' + trip.trips[0].ext_trip_id + ')'
+    addSearchResultToJourney(result);
 }
 
 function getTripDepartureIsInFuture(trip) {
@@ -144,7 +104,7 @@ function getFormattedJourneyTimes(tripData) {
 }
 
 function getFormattedTime(time) {
-    return new Date(time).toLocaleTimeString(undefined, {hour: 'numeric', minute: 'numeric'});
+    return new Date(time).toLocaleTimeString('EST', {hour: 'numeric', minute: 'numeric'});
 }
 
 function addSearchResultToJourney(formattedJourneyTime) {
@@ -154,7 +114,7 @@ function addSearchResultToJourney(formattedJourneyTime) {
 }
 
 function removeLoadingText() {
-    params.node.firstChild.textContent = names[params.node.id];
+    params.node.firstChild.textContent = params.node.firstChild.textContent.slice(0, -loading.length);
 }
 
 function getTimesForCombinedJourney() {
