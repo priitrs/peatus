@@ -12,37 +12,24 @@ let stops = {
     "Kasemetsa": "64-8852-17"
 }
 
-const hagudiTallinn = document.getElementById('hagTal');
-const tallinnUlemiste = document.getElementById('talUle');
-const ulemisteTallinn = document.getElementById('uleTal');
-const tallinnHagudi = document.getElementById('talHag');
-const hagudiRapla = document.getElementById('hagRapla');
-const raplaHagudi = document.getElementById('raplaHag');
-const kasemetsaRapla = document.getElementById('kasRapla');
-const raplaKasemetsa = document.getElementById('raplaKas');
-const sakuRapla = document.getElementById('sakuRapla');
-const raplaSaku = document.getElementById('raplaSaku');
-const kasemetsaHagudi = document.getElementById('kasHag');
-const hagudiKasemetsa = document.getElementById('hagKas');
-
 const allTrips = document.querySelectorAll('.trip');
 
 let otherJourneysAreHidden = false;
 let params = {};
 
 let config = [
-    {node: hagudiTallinn, start: stops.Hagudi, end: stops.TallinnW},
-    {node: tallinnUlemiste, start: stops.TallinnS, end: stops.Ulemiste},
-    {node: ulemisteTallinn, start: stops.Ulemiste, end: stops.TallinnS},
-    {node: tallinnHagudi, start: stops.TallinnW, end: stops.Hagudi},
-    {node: hagudiRapla, start: stops.Hagudi, end: stops.Rapla},
-    {node: raplaHagudi, start: stops.Rapla, end: stops.Hagudi},
-    {node: kasemetsaRapla, start: stops.Kasemetsa, end: stops.Rapla},
-    {node: raplaKasemetsa, start: stops.Rapla, end: stops.Kasemetsa},
-    {node: sakuRapla, start: stops.Saku, end: stops.Rapla},
-    {node: raplaSaku, start: stops.Rapla, end: stops.Saku},
-    {node: kasemetsaHagudi, start: stops.Kasemetsa, end: stops.Hagudi},
-    {node: hagudiKasemetsa, start: stops.Hagudi, end: stops.Kasemetsa},
+    {node: document.getElementById('hagTal'), start: stops.Hagudi, end: stops.TallinnW},
+    {node: document.getElementById('talUle'), start: stops.TallinnS, end: stops.Ulemiste},
+    {node: document.getElementById('uleTal'), start: stops.Ulemiste, end: stops.TallinnS},
+    {node: document.getElementById('talHag'), start: stops.TallinnW, end: stops.Hagudi},
+    {node: document.getElementById('hagRapla'), start: stops.Hagudi, end: stops.Rapla},
+    {node: document.getElementById('raplaHag'), start: stops.Rapla, end: stops.Hagudi},
+    {node: document.getElementById('kasRapla'), start: stops.Kasemetsa, end: stops.Rapla},
+    {node: document.getElementById('raplaKas'), start: stops.Rapla, end: stops.Kasemetsa},
+    {node: document.getElementById('sakuRapla'), start: stops.Saku, end: stops.Rapla},
+    {node: document.getElementById('raplaSaku'), start: stops.Rapla, end: stops.Saku},
+    {node: document.getElementById('kasHag'), start: stops.Kasemetsa, end: stops.Hagudi},
+    {node: document.getElementById('hagKas'), start: stops.Hagudi, end: stops.Kasemetsa},
 ]
 
 config.forEach( c => {
@@ -74,7 +61,7 @@ function startNewSearch() {
 function getTimesForSingleJourney() {
     fetchData(params.start1, params.destination1).then(res => {
         res.forEach(trip => {
-            addToSearchResultsIfInFuture(trip);
+            addToSearchResults(trip);
         });
     }).then(() => {
         removeLoadingText();
@@ -88,10 +75,11 @@ function addLoadingText() {
     params.node.firstChild.textContent = params.node.firstChild.textContent + loading
 }
 
-function addToSearchResultsIfInFuture(trip) {
+function addToSearchResults(trip) {
     let result = getTripDepartureIsInFuture(trip) ? '• ' : '';
     result += getFormattedJourneyTimes(trip.trips[0]);
     result += '  (' + trip.trips[0].ext_trip_id + ')'
+    if (trip.trips[0].route_class === 'E') result += ' E'
     addSearchResultToJourney(result);
 }
 
