@@ -23,6 +23,7 @@ let config = [
     {node: document.getElementById('uleTal'), start: stops.Ulemiste, end: stops.TallinnS},
     {node: document.getElementById('talHag'), start: stops.TallinnW, end: stops.Hagudi},
     {node: document.getElementById('talSaku'), start: stops.TallinnW, end: stops.Saku},
+    {node: document.getElementById('talKas'), start: stops.TallinnW, end: stops.Kasemetsa},
     {node: document.getElementById('hagRapla'), start: stops.Hagudi, end: stops.Rapla},
     {node: document.getElementById('raplaHag'), start: stops.Rapla, end: stops.Hagudi},
     {node: document.getElementById('kasRapla'), start: stops.Kasemetsa, end: stops.Rapla},
