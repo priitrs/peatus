@@ -1,5 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
+.journey.past {
+    opacity: 0.5;
+}
+.express-icon {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 6px;
+    color: #111827;
+}
+
 * {
     box-sizing: border-box;
 }

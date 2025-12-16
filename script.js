@@ -80,11 +80,13 @@ function addLoadingText() {
 }
 
 function addToSearchResults(trip) {
-    let result = getTripDepartureIsInFuture(trip) ? '• ' : '';
-    result += getFormattedJourneyTimes(trip.trips[0]);
+    const isInFuture = getTripDepartureIsInFuture(trip)
+    // let result = isInFuture ? '• ' : '';
+    let result = getFormattedJourneyTimes(trip.trips[0]);
     result += '  (' + trip.trips[0].ext_trip_id + ')'
-    if (trip.trips[0].route_class === 'E') result += ' E'
-    addSearchResultToJourney(result);
+    const isExpress = trip.trips[0].route_class === 'E'
+    // if (isExpress) result += ' E'
+    addSearchResultToJourney(result, isInFuture, isExpress);
 }
 
 function getTripDepartureIsInFuture(trip) {
@@ -99,9 +101,23 @@ function getFormattedTime(time) {
     return new Date(time).toLocaleTimeString('EST', {hour: 'numeric', minute: 'numeric'});
 }
 
-function addSearchResultToJourney(formattedJourneyTime) {
+function addSearchResultToJourney(formattedJourneyTime, isInFuture, isExpress) {
     const listItem = document.createElement('p')
     listItem.innerText = formattedJourneyTime;
+    listItem.classList.add('journey');
+    if (!isInFuture) {
+        listItem.classList.add('past');
+    }
+    if (isExpress) {
+        const icon = document.createElement('span');
+        icon.className = 'express-icon';
+        icon.innerHTML = `
+      <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+        <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" fill="currentColor"/>
+      </svg>
+    `;
+        listItem.prepend(icon);
+    }
     params.node.appendChild(listItem)
 }
 
