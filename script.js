@@ -81,11 +81,9 @@ function addLoadingText() {
 
 function addToSearchResults(trip) {
     const isInFuture = getTripDepartureIsInFuture(trip)
-    // let result = isInFuture ? '• ' : '';
     let result = getFormattedJourneyTimes(trip.trips[0]);
     result += '  (' + trip.trips[0].ext_trip_id + ')'
     const isExpress = trip.trips[0].route_class === 'E'
-    // if (isExpress) result += ' E'
     addSearchResultToJourney(result, isInFuture, isExpress);
 }
 
@@ -231,3 +229,11 @@ function fetchData(originStop, destinationStop) {
             console.error('Fetch error:', error);
         });
 }
+
+const toggle = document.getElementById("tripToggle");
+
+toggle.addEventListener("change", () => {
+    document.querySelectorAll(".trip").forEach(el => {
+        el.classList.toggle("pink", toggle.checked);
+    });
+});
