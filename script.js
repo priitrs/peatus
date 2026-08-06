@@ -18,10 +18,8 @@ let otherJourneysAreHidden = false;
 let params = {};
 
 let config = [
-    {node: document.getElementById('hagTal'), start: stops.Hagudi, end: stops.TallinnW},
     {node: document.getElementById('talUle'), start: stops.TallinnS, end: stops.Ulemiste},
     {node: document.getElementById('uleTal'), start: stops.Ulemiste, end: stops.TallinnS},
-    {node: document.getElementById('talHag'), start: stops.TallinnW, end: stops.Hagudi},
     {node: document.getElementById('talSaku'), start: stops.TallinnW, end: stops.Saku},
     {node: document.getElementById('talKas'), start: stops.TallinnW, end: stops.Kasemetsa},
     {node: document.getElementById('hagRapla'), start: stops.Hagudi, end: stops.Rapla},
@@ -32,8 +30,8 @@ let config = [
     {node: document.getElementById('sakuRapla'), start: stops.Saku, end: stops.Rapla},
     {node: document.getElementById('sakuTal'), start: stops.Saku, end: stops.TallinnW},
     {node: document.getElementById('raplaSaku'), start: stops.Rapla, end: stops.Saku},
-    {node: document.getElementById('kasHag'), start: stops.Kasemetsa, end: stops.Hagudi},
-    {node: document.getElementById('hagKas'), start: stops.Hagudi, end: stops.Kasemetsa},
+    {node: document.getElementById('raplaTal'), start: stops.Rapla, end: stops.TallinnW},
+    {node: document.getElementById('talRapla'), start: stops.TallinnW, end: stops.Rapla},
 ]
 
 config.forEach( c => {
