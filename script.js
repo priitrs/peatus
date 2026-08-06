@@ -78,11 +78,13 @@ function addLoadingText() {
 }
 
 function addToSearchResults(trip) {
+    console.log(trip)
     const isInFuture = getTripDepartureIsInFuture(trip)
     let result = getFormattedJourneyTimes(trip.trips[0]);
     result += '  (' + trip.trips[0].ext_trip_id + ')'
     const isExpress = trip.trips[0].route_class === 'E'
-    addSearchResultToJourney(result, isInFuture, isExpress);
+    const messages = trip.trips[0].trip_messages;
+    addSearchResultToJourney(result, isInFuture, isExpress, messages);
 }
 
 function getTripDepartureIsInFuture(trip) {
@@ -97,7 +99,7 @@ function getFormattedTime(time) {
     return new Date(time).toLocaleTimeString('EST', {hour: 'numeric', minute: 'numeric'});
 }
 
-function addSearchResultToJourney(formattedJourneyTime, isInFuture, isExpress) {
+function addSearchResultToJourney(formattedJourneyTime, isInFuture, isExpress, messages) {
     const listItem = document.createElement('p')
     listItem.innerText = formattedJourneyTime;
     listItem.classList.add('journey');
@@ -115,6 +117,37 @@ function addSearchResultToJourney(formattedJourneyTime, isInFuture, isExpress) {
         listItem.prepend(icon);
     }
     params.node.appendChild(listItem)
+
+    messages = [
+        {
+            "id": 27330,
+            "created_at": "2026-05-20T10:51:13.573+03:00",
+            "updated_at": "2026-05-20T10:51:13.573+03:00",
+            "ext_trip_id": "119",
+            "realtime_data_enabled": false,
+            "message_et": "Reis on asendatud bussiga Valga ja Elva vahel.",
+            "message_en": "The train has been replaced by a bus between Valga and Elva.",
+            "message_ru": "\u0412\u043c\u0435\u0441\u0442\u043e \u043f\u043e\u0435\u0437\u0434\u0430 \u043d\u0430 \u043c\u0430\u0440\u0448\u0440\u0443\u0442\u0435 \u043c\u0435\u0436\u0434\u0443 \u0412\u0430\u043b\u0433\u043e\u0439 \u0438 \u042d\u043b\u044c\u0432\u043e\u0439 \u043a\u0443\u0440\u0441\u0438\u0440\u0443\u0435\u0442 \u0430\u0432\u0442\u043e\u0431\u0443\u0441."
+        },
+        {
+            "id": 27748,
+            "created_at": "2026-06-05T14:05:54.669+03:00",
+            "updated_at": "2026-06-05T14:05:54.669+03:00",
+            "ext_trip_id": "119",
+            "realtime_data_enabled": false,
+            "message_et": "Tallinna suunas reisimiseks tuleb Tartus \u00fcmber istuda teise rongi, mis v\u00e4ljub sama perrooni \u00e4\u00e4rest.",
+            "message_en": "To travel towards Tallinn, please change to another train in Tartu, which departs from the same platform.",
+            "message_ru": "\u0427\u0442\u043e\u0431\u044b \u0434\u043e\u0431\u0440\u0430\u0442\u044c\u0441\u044f \u0434\u043e \u0422\u0430\u043b\u043b\u0438\u043d\u0430, \u043f\u043e\u0436\u0430\u043b\u0443\u0439\u0441\u0442\u0430, \u0441\u0434\u0435\u043b\u0430\u0439\u0442\u0435 \u043f\u0435\u0440\u0435\u0441\u0430\u0434\u043a\u0443 \u0432 \u0422\u0430\u0440\u0442\u0443 \u043d\u0430 \u0434\u0440\u0443\u0433\u043e\u0439 \u043f\u043e\u0435\u0437\u0434, \u043e\u0442\u043f\u0440\u0430\u0432\u043b\u044f\u044e\u0449\u0438\u0439\u0441\u044f \u0441 \u0442\u043e\u0439 \u0436\u0435 \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u044b."
+        }
+    ]
+    if (messages && messages.length > 0) {
+        const messageItem = document.createElement('p')
+        messageItem.innerText = messages
+            .map(msg => msg.message_et)
+            .join("\n");
+        messageItem.classList.add('messages');
+        params.node.appendChild(messageItem)
+    }
 }
 
 function removeLoadingText() {

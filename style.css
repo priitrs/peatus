@@ -112,3 +112,9 @@ input:checked + .slider::before {
 .trip.pink {
     background-color: hotpink;
 }
+
+.messages {
+    width: 100vw;
+    line-height: 1.5;
+    text-align: center;
+}
