@@ -16,7 +16,7 @@ class DatePickerNav extends HTMLElement {
     }
 
     formatDate(date) {
-        return date.toLocaleDateString("en-GB");
+        return date.toLocaleDateString("lt-LT");
     }
 
     isToday(date) {
