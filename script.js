@@ -106,7 +106,10 @@ function addToSearchResults(trip) {
 }
 
 function getTripDepartureIsInFuture(trip) {
-    return trip.trips[0].departure_time_min > getMinutesFromMidnight();
+    const isFutureDateSelected = selectedDate !== getTallinnDate(new Date())
+    const todayDepartureIsInFuture = trip.trips[0].departure_time_min > getMinutesFromMidnight()
+
+    return isFutureDateSelected || todayDepartureIsInFuture;
 }
 
 function getFormattedJourneyTimes(tripData) {
