@@ -114,7 +114,13 @@ input:checked + .slider::before {
 }
 
 .messages {
-    width: 100vw;
+    width: 95vw;
     line-height: 1.5;
     text-align: center;
+    font-size: small;
+}
+
+p.messages{
+    margin-top: -10px;
+    color: darkred;
 }
