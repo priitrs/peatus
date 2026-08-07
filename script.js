@@ -40,6 +40,28 @@ config.forEach( c => {
     });
 })
 
+const datePicker = document.querySelector("date-picker-nav");
+
+function getTallinnDate(date) {
+    return new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Europe/Tallinn",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).format(date);
+}
+
+let selectedDate = getTallinnDate(new Date());
+
+datePicker.addEventListener("date-change", event => {
+    selectedDate = getTallinnDate(event.detail.date)
+
+    if (otherJourneysAreHidden){
+        clearLastSearch()
+        startNewSearch()
+    }
+});
+
 function handleClickOnJourney(start, destination, node) {
     prepareSearchParameters(start, destination, node);
     return otherJourneysAreHidden ? clearLastSearch() : startNewSearch();
@@ -169,6 +191,7 @@ function fetchData(originStop, destinationStop) {
         body: JSON.stringify({
             "origin_stop_area_id": originStop,
             "destination_stop_area_id": destinationStop,
+            "date": selectedDate,
             "channel": "web"
         }),
     })
