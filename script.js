@@ -36,28 +36,25 @@ let config = [
 
 config.forEach( c => {
     c.node.addEventListener(('click'), () => {
-        handleClickOnJourney(c.start, c.end, null, null, c.node);
+        handleClickOnJourney(c.start, c.end, c.node);
     });
 })
 
-function handleClickOnJourney(start, destination, start2, destination2, node) {
-    prepareSearchParameters(start, destination, start2, destination2, node);
+function handleClickOnJourney(start, destination, node) {
+    prepareSearchParameters(start, destination, node);
     return otherJourneysAreHidden ? clearLastSearch() : startNewSearch();
 }
 
-function prepareSearchParameters(start, destination, start2, destination2, node) {
+function prepareSearchParameters(start, destination, node) {
     params.start1 = start;
-    params.start2 = start2;
     params.destination1 = destination;
-    params.destination2 = destination2;
     params.node = node;
-    params.isSingleJourney = start2 === null || destination2 === null;
 }
 
 function startNewSearch() {
     addLoadingText();
     toggleJourneysListVisibility();
-    return params.isSingleJourney ? getTimesForSingleJourney() : getTimesForCombinedJourney();
+    return getTimesForSingleJourney();
 }
 
 function getTimesForSingleJourney() {
@@ -78,7 +75,6 @@ function addLoadingText() {
 }
 
 function addToSearchResults(trip) {
-    console.log(trip)
     const isInFuture = getTripDepartureIsInFuture(trip)
     let result = getFormattedJourneyTimes(trip.trips[0]);
     result += '  (' + trip.trips[0].ext_trip_id + ')'
@@ -132,35 +128,6 @@ function removeLoadingText() {
     params.node.firstChild.textContent = params.node.firstChild.textContent.slice(0, -loading.length);
 }
 
-function getTimesForCombinedJourney() {
-    fetchData(params.start1, params.destination1).then(res => {
-        fetchData(params.start2, params.destination2).then(res2 => {
-            res.forEach(trip => {
-                if (getTripDepartureIsInFuture(trip)) {
-                    let connectingTripFound = false;
-                    res2.forEach(trip2 => {
-                        if (!connectingTripFound && (trip2.trips[0].departure_time_min > trip.trips[0].arrival_time_min)) {
-                           connectingTripFound = true;
-                           addCombinedTripToSearchResults(trip, trip2);
-                        }
-                    });
-                }
-            })
-        });
-    }).then(() => {
-        removeLoadingText();
-    }).catch(e => {
-        console.log(e)
-    });
-}
-
-function addCombinedTripToSearchResults(trip, trip2) {
-    let gapBetweenTrips = trip2.trips[0].departure_time_min - trip.trips[0].arrival_time_min;
-    const listItem = document.createElement('p');
-    listItem.innerHTML = getFormattedJourneyTimes(trip.trips[0]) + getFormattedGap(gapBetweenTrips) + getFormattedJourneyTimes(trip2.trips[0])
-    params.node.appendChild(listItem);
-}
-
 function toggleJourneysListVisibility() {
     otherJourneysAreHidden = !otherJourneysAreHidden;
     allTrips.forEach(journey => {
@@ -183,20 +150,6 @@ function clearLastSearchResults() {
 function clearLastSearch() {
     clearLastSearchResults();
     toggleJourneysListVisibility();
-}
-
-function getFormattedGap(gapBetweenTrips) {
-    return '&nbsp;&nbsp;' + `<span class="${(getColorForGapBetween(gapBetweenTrips))}">` + ' ' + gapBetweenTrips + 'min ' + `</span>` + '&nbsp;&nbsp;';
-}
-
-function getColorForGapBetween(minutesBetweenTrips) {
-    if (minutesBetweenTrips <= 15) {
-        return 'bold green';
-    } else if (minutesBetweenTrips < 30) {
-        return 'bold yellow';
-    } else {
-        return 'bold red'
-    }
 }
 
 function getMinutesFromMidnight() {
